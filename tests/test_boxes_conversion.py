@@ -170,9 +170,9 @@ def test_torch_xyxy_to_xywh():
         [0, 0, 10, 10],
         [40, 40, 10, 10],
         [90, 90, 10, 10],
-    ])
-
-    assert torch.all(torch.eq(result, expected))
+    ]).type_as(result)
+    
+    torch.testing.assert_close(result, expected)
 
     fixture_boxes_xyxy_torch_norm = torch.from_numpy(fixture_boxes_xyxy_norm)
     result = torch_xyxy_to_xywh(fixture_boxes_xyxy_torch_norm)
@@ -182,7 +182,7 @@ def test_torch_xyxy_to_xywh():
         [0.4, 0.6, 0.5, 0.35]
     ]).type_as(result)
 
-    assert torch.allclose(result, expected)
+    torch.testing.assert_close(result, expected)
 
 
 def test_torch_xyxy_to_cxcy():
@@ -204,7 +204,7 @@ def test_torch_xyxy_to_cxcy():
         [0.65, 0.7750, 0.5, 0.35]
     ]).type_as(result)
 
-    assert torch.allclose(result, expected)
+    torch.testing.assert_close(result, expected)
 
 
 def test_torch_xywh_to_xyxy():
@@ -226,7 +226,7 @@ def test_torch_xywh_to_xyxy():
         [0.3, 0.7, 0.95, 0.9]
     ]).type_as(result)
 
-    assert torch.allclose(result, expected)
+    torch.testing.assert_close(result, expected)
 
 
 def test_torch_xywh_to_cxcy():
@@ -248,7 +248,7 @@ def test_torch_xywh_to_cxcy():
         [0.625, 0.8, 0.65, 0.2]
     ]).type_as(result)
 
-    assert torch.allclose(result, expected)
+    torch.testing.assert_close(result, expected)
 
 
 def test_torch_cxcy_to_xyxy():
@@ -270,7 +270,7 @@ def test_torch_cxcy_to_xyxy():
         [0.15, 0.15, 0.85, 0.85],
     ]).type_as(result)
 
-    assert torch.allclose(result, expected)
+    torch.testing.assert_close(result, expected)
 
 
 def test_torch_cxcy_to_xywh():
@@ -292,7 +292,7 @@ def test_torch_cxcy_to_xywh():
         [0.15, 0.15, 0.7, 0.7],
     ]).type_as(result)
 
-    assert torch.allclose(result, expected)
+    torch.testing.assert_close(result, expected)
 
 
 def test_numpy_backward_conversion():
