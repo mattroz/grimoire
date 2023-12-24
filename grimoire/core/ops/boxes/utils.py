@@ -103,7 +103,7 @@ def numpy_validate_boxes_format(boxes: np.ndarray, format: BoundingBoxFormat) ->
         format (BoundingBoxFormat): bounding boxes format, one of [`xyxy`, `xywh`, `cxcy`]
     """
 
-    assert np.sum(boxes, axis=1).all(), "boxes cannot contain only zeros"
+    assert not (np.count_nonzero(boxes, axis=1) == 0).any(), "boxes cannot contain only zeros"
 
     assert (np.sum(boxes, axis=1) > 0).all(), "boxes cannot contain negative values"
 
@@ -128,7 +128,7 @@ def torch_validate_boxes_format(boxes: Tensor, format: BoundingBoxFormat) -> Non
         format (BoundingBoxFormat): bounding boxes format, one of [`xyxy`, `xywh`, `cxcy`]
     """
 
-    assert torch.sum(boxes, dim=1).all(), "boxes cannot contain only zeros"
+    assert not (torch.count_nonzero(boxes, dim=1) == 0).any(), "boxes cannot contain only zeros"
 
     assert (torch.sum(boxes, dim=1) > 0).all(), "boxes cannot contain negative values"
 
