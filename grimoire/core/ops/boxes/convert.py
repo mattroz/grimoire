@@ -151,6 +151,9 @@ def cxcy_to_xywh(boxes: np.ndarray | Tensor) -> np.ndarray | Tensor:
         return torch_cxcy_to_xywh(boxes)
 
 
+# primitives
+
+
 def numpy_xyxy_to_xywh(boxes: np.ndarray) -> np.ndarray:
     """Converts boxes from [xmin, ymin, xmax, ymax] to [xmin, ymin, width, height] format.
 
@@ -285,6 +288,7 @@ def torch_xyxy_to_cxcy(boxes: Tensor) -> Tensor:
     Returns:
         boxes (Tensor(N, 4)): boxes in [cx, cy, width, height] format.
     """
+    original_dtype = boxes.dtype
     x1, y1, x2, y2 = boxes.unbind(-1)
     cx = (x1 + x2) / 2
     cy = (y1 + y2) / 2
@@ -293,7 +297,7 @@ def torch_xyxy_to_cxcy(boxes: Tensor) -> Tensor:
 
     boxes = torch.stack((cx, cy, w, h), dim=-1)
 
-    return boxes
+    return boxes.type(original_dtype)
 
 
 def torch_xywh_to_xyxy(boxes: Tensor) -> Tensor:
@@ -307,10 +311,11 @@ def torch_xywh_to_xyxy(boxes: Tensor) -> Tensor:
     Returns:
         boxes (Tensor[N, 4]): boxes in [xmin, ymin, xmax, ymax] format.
     """
+    original_dtype = boxes.dtype
     x, y, w, h = boxes.unbind(-1)
     boxes = torch.stack([x, y, x + w, y + h], dim=-1)
 
-    return boxes
+    return boxes.type(original_dtype)
 
 
 def torch_xywh_to_cxcy(boxes: Tensor) -> Tensor:
@@ -322,12 +327,13 @@ def torch_xywh_to_cxcy(boxes: Tensor) -> Tensor:
     Returns:
         boxes (Tensor[N, 4]): boxes in [cx, cy, width, height] format.
     """
+    original_dtype = boxes.dtype
     x, y, w, h = boxes.unbind(-1)
     cx = x + w / 2
     cy = y + h / 2
     boxes = torch.stack([cx, cy, w, h], dim=-1)
 
-    return boxes
+    return boxes.type(original_dtype)
 
 
 def torch_cxcy_to_xyxy(boxes: Tensor) -> Tensor:
@@ -339,6 +345,7 @@ def torch_cxcy_to_xyxy(boxes: Tensor) -> Tensor:
     Returns:
         boxes (Tensor(N, 4)): boxes in [xmin, ymin, xmax, ymax] format.
     """
+    original_dtype = boxes.dtype
     cx, cy, w, h = boxes.unbind(-1)
     x1 = cx - 0.5 * w
     y1 = cy - 0.5 * h
@@ -347,7 +354,7 @@ def torch_cxcy_to_xyxy(boxes: Tensor) -> Tensor:
 
     boxes = torch.stack((x1, y1, x2, y2), dim=-1)
 
-    return boxes
+    return boxes.type(original_dtype)
 
 
 def torch_cxcy_to_xywh(boxes: Tensor) -> Tensor:
@@ -359,13 +366,14 @@ def torch_cxcy_to_xywh(boxes: Tensor) -> Tensor:
     Returns:
         boxes (Tensor(N, 4)): boxes in [xmin, ymin, width, height] format.
     """
+    original_dtype = boxes.dtype
     cx, cy, w, h = boxes.unbind(-1)
     x = cx - 0.5 * w
     y = cy - 0.5 * h
 
     boxes = torch.stack((x, y, w, h), dim=-1)
 
-    return boxes
+    return boxes.type(original_dtype)
 
 
 
