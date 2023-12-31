@@ -57,7 +57,7 @@ class SelfAttentionBlock(nn.Module):
     def forward(self, query, key, value, attention_mask: torch.BoolTensor = None):
         # Get linear projections of K, Q and V according to Fig. 2 in the original Transformer paper
         queries = self.query_projection(query)  # [b, seqlen, d_k]
-        keys = self.key_projection(key)       # [b, seqlen, d_k]
+        keys = self.key_projection(key)         # [b, seqlen, d_k]
         values = self.value_projection(value)   # [b, seqlen, d_v]
 
         # Perform Scaled Dot-Product Attention (eq. 1 in the Transformer paper).
@@ -69,7 +69,7 @@ class SelfAttentionBlock(nn.Module):
             assert attention_mask.dtype == torch.bool
             attention_scores = attention_scores.masked_fill(attention_mask.logical_not(), float("-inf"))
 
-        attention_scores = torch.softmax(attention_scores, dim=-1) # [b, seqlen, seqlen]
+        attention_scores = torch.softmax(attention_scores, dim=-1)  # [b, seqlen, seqlen]
         attention_scores = torch.matmul(attention_scores, values)   # [b, seqlen, d_v]
 
         return attention_scores
@@ -110,6 +110,7 @@ class TransformerEncoderBlock(nn.Module):
     """Section 3.3 from "Attention Is All You Need" paper"""
     def __init__(self, d_model=512, num_heads=8, d_ff=2048, dropout=0.1):
         super().__init__()
+        
         self.mha = MultiHeadAttention(num_heads, d_model)
         self.ffn = nn.Sequential(
             nn.Linear(d_model, d_ff),
@@ -129,4 +130,36 @@ class TransformerEncoderBlock(nn.Module):
         x = self.ffn_norm(x + self.dropout(self.ffn(x)))
 
         return x
-        
+    
+
+class TransformerDecoderBlock(nn.Module):
+    def __init__(self, d_model=512, num_heads=8, d_ff=2048, dropout=0.1):
+        super().__init__()
+
+        self.mmha = MaskedMultiHeadAttention(num_heads, d_model)
+        self.cross_mha = MultiHeadAttention(num_heads, d_model)
+        self.mmha_norm = nn.LayerNorm(d_model)
+        self.cross_mha_norm = nn.LayerNorm(d_model)
+
+        self.ffn = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(d_ff, d_model)
+        )
+        self.ffn_norm = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+    
+    def forward(self, input_tensor, encoder_output):
+        x = input_tensor
+
+        x = self.dropout(self.mmha(query=x, key=x, value=x))
+        x = self.mmha_norm(x + input_tensor)
+
+        cross_att = self.dropout(self.cross_mha(query=x, key=encoder_output, value=encoder_output))
+        x = self.cross_mha_norm(x + cross_att)
+
+        ffn = self.dropout(self.ffn(x))
+        x = self.ffn_norm(x + ffn)
+
+        return x
