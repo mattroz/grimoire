@@ -51,7 +51,7 @@ class SelfAttentionBlock(nn.Module):
         self.key_projection = nn.Linear(d_model, embedding_dim, bias=False)
         self.value_projection = nn.Linear(d_model, embedding_dim, bias=True)
 
-        self.final_projection = nn.Linear(embedding_dim, embedding_dim, bias=False)
+        self.final_projection = nn.Linear(embedding_dim, embedding_dim)
         self.norm = nn.LayerNorm(embedding_dim)
 
     def forward(self, query, key, value, attention_mask: torch.BoolTensor = None):
@@ -79,7 +79,7 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, num_heads=8, d_model=512):
         super().__init__()
         head_size = d_model // num_heads
-        self.mha = nn.ModuleList([SelfAttentionBlock(d_model, head_size) for _ in range(num_heads)])
+        self.mha = nn.ModuleList([SelfAttentionBlock(d_model, head_size) for _ in range(num_heads)])    # This is not very efficient, need to reimplement it in a batched manner
 
     def forward(self, query, key, value):
         x = torch.cat([head(query, key, value, attention_mask=None) for head in self.mha], dim=-1)
