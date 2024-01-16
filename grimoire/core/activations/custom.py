@@ -8,7 +8,9 @@ class QuickGELU(nn.Module):
         return x * torch.sigmoid(1.702 * x)
 
 
-# slower, than QuickGELU, but more accurate (https://github.com/hendrycks/GELUs)
+# slower, than QuickGELU, but more accurate (https://github.com/hendrycks/GELUs).
+# Also I've found torch now have GELU activations, which implementation is following FastGELU.
+
 class FastGELU(nn.Module):
     def forward(self, x):
         return 0.5 * x * (1 + torch.tanh(x * 0.7978845608 * (1 + 0.044715 * x**2)))

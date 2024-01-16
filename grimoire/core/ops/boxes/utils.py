@@ -4,7 +4,6 @@ import numpy as np
 
 from torch import Tensor
 
-from .convert import xywh_to_xyxy, cxcy_to_xyxy
 from grimoire.engine.boxes import BoundingBoxFormat
 
 
