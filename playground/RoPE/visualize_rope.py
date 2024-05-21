@@ -16,10 +16,10 @@ def visualize_rope(theta, d_model, context_length):
     # thetas_per_token matrix visualization, m - position in a sequence, θ - rotation angle.
     #___________________________________________________________________
     # m = 1 | 1 * θ1 |  1 * θ2 |  1 * θ3  |  ...  |  1 * θ_{d_model//2} |
-	# m = 2 | 2 * θ1 |  2 * θ2 |  2 * θ3  |  ...  |  2 * θ_{d_model//2} |
-	# m = 3 | 3 * θ1 |  3 * θ2 |  3 * θ3  |  ...  |  3 * θ_{d_model//2} |
-	# m = n | .......|.........|......... |...... |.................... |
-	# m = T | T * θ1 |  T * θ2 |  T * θ3  |  ...  |  T * θ_{d_model//2} |
+    # m = 2 | 2 * θ1 |  2 * θ2 |  2 * θ3  |  ...  |  2 * θ_{d_model//2} |
+    # m = 3 | 3 * θ1 |  3 * θ2 |  3 * θ3  |  ...  |  3 * θ_{d_model//2} |
+    # m = n | .......|.........|......... |...... |.................... |
+    # m = T | T * θ1 |  T * θ2 |  T * θ3  |  ...  |  T * θ_{d_model//2} |
     #___________________________________________________________________|
     thetas_per_token = torch.outer(torch.arange(context_length), thetas) # [context_length, d_model//2] - every token embedding has its own rotation angles.
 
